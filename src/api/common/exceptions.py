@@ -15,6 +15,12 @@ from src.common.exceptions import (
     UnAuthorizedError,
 )
 from src.core.logger import log
+from src.database.exceptions import (
+    EntityAlreadyExistsError,
+    EntityNotFoundError,
+    InvalidParamsError,
+    RepositoryError,
+)
 
 
 def setup_exception_handlers(app: FastAPI) -> None:
@@ -26,6 +32,18 @@ def setup_exception_handlers(app: FastAPI) -> None:
     )
     app.add_exception_handler(
         ServiceNotImplementedError, error_handler(status.HTTP_501_NOT_IMPLEMENTED)
+    )
+    app.add_exception_handler(
+        EntityNotFoundError,
+        repository_error_handler(status.HTTP_404_NOT_FOUND),
+    )
+    app.add_exception_handler(
+        EntityAlreadyExistsError,
+        repository_error_handler(status.HTTP_409_CONFLICT),
+    )
+    app.add_exception_handler(
+        InvalidParamsError,
+        repository_error_handler(status.HTTP_400_BAD_REQUEST),
     )
     app.add_exception_handler(RequestValidationError, validation_exception_handler)  # type: ignore
     app.add_exception_handler(Exception, unknown_exception_handler)
@@ -58,6 +76,24 @@ def error_handler(
     status_code: int,
 ) -> Callable[..., Awaitable[ORJSONResponse]]:
     return partial(app_error_handler, status_code=status_code)
+
+
+def repository_error_handler(
+    status_code: int,
+) -> Callable[..., Awaitable[ORJSONResponse]]:
+    return partial(handle_repository_error, status_code=status_code)
+
+
+async def handle_repository_error(
+    request: Request,
+    err: RepositoryError,
+    status_code: int,
+) -> ORJSONResponse:
+    log.error(f"Handle error: {type(err).__name__}")
+    return ORJSONResponse(
+        {"message": str(err)},
+        status_code=status_code,
+    )
 
 
 async def app_error_handler(

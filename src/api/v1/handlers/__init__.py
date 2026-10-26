@@ -3,10 +3,32 @@ from typing import Any, Callable, Union
 
 from src.common.interfaces.handler import Handler
 
+from . import auth, role, user
 from .mediator import MediatorImpl
 
 
 def setup_mediator(mediator: MediatorImpl, **dependencies: Any) -> None:
+    # user
+    mediator.register(user.CreateUserQuery, user.CreateUserHandler)
+    mediator.register(user.DeleteUserQuery, user.DeleteUserHandler)
+    mediator.register(user.SelectUserQuery, user.SelectUserHandler)
+    mediator.register(user.UpdateUserQuery, user.UpdateUserHandler)
+    mediator.register(user.SelectUsersQuery, user.SelectManyUsershandler)
+
+    # role
+    mediator.register(role.CreateRoleQuery, role.CreateRoleHandler)
+    mediator.register(role.DeleteRoleQuery, role.DeleteRoleHandler)
+    mediator.register(role.SelectRoleQuery, role.SelectRoleHandler)
+    mediator.register(role.UpdateRoleQuery, role.UpdateRoleHandler)
+    mediator.register(role.SelectManyRolesQuery, role.SelectManyRoleshandler)
+
+    # auth
+    mediator.register(auth.PermissionQuery, auth.PermissionHandler)
+    mediator.register(auth.LoginQuery, auth.LoginHandler)
+    mediator.register(auth.LogoutQuery, auth.LogoutHandler)
+    mediator.register(auth.RefresTokenQuery, auth.RefreshTokenHandler)
+    mediator.register(auth.RegisterUserQuery, auth.RegisterUserHandler)
+
     # Removing this line will disable Dependency Injection,
     # which here functions simply as aggregation in the handlers.
     register_dependencies(mediator, **dependencies)

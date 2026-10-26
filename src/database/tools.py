@@ -16,7 +16,7 @@ from sqlalchemy import Select, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Load, RelationshipProperty, joinedload, subqueryload
 
-from src.common.exceptions import AppException, ConflictError
+from src.database.exceptions import EntityAlreadyExistsError, RepositoryError
 from src.database.models import MODELS_RELATIONSHIPS_NODE
 from src.database.models.base import Base, ModelType
 
@@ -101,7 +101,9 @@ def select_with_relationships(
 
 def on_integrity(
     *uniques: str,
-    should_raise: Union[Type[AppException], AppException] = ConflictError,
+    should_raise: Union[Type[RepositoryError], RepositoryError] = (
+        EntityAlreadyExistsError
+    ),
     base_message: str = "already in use",
 ) -> Callable[[Callable[P, Awaitable[R]]], Callable[P, Awaitable[R]]]:
     def _wrapper(coro: Callable[P, Awaitable[R]]) -> Callable[P, Awaitable[R]]:
@@ -118,7 +120,7 @@ def on_integrity(
                             raise should_raise(message) from e
                         else:
                             raise should_raise from e
-                raise AppException() from e
+                raise RepositoryError("Database integrity error") from e
 
         return _inner_wrapper
 

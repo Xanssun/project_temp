@@ -9,6 +9,10 @@ class UnAuthorizedError(BaseDoc):
     pass
 
 
+class PreconditionRequiredError(BaseDoc):
+    pass
+
+
 class NotFoundError(BaseDoc):
     pass
 

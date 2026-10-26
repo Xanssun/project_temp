@@ -20,6 +20,7 @@ from sqlalchemy import (
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.common.interfaces.crud import AbstractCRUDRepository
+from src.database.exceptions import EntityNotCreatedError
 from src.database.models.base import ModelType
 
 
@@ -30,9 +31,12 @@ class CRUDRepository(AbstractCRUDRepository[ModelType]):
         super().__init__(model)
         self._session = session
 
-    async def insert(self, **values: Any) -> ModelType | None:
+    async def insert(self, **values: Any) -> ModelType:
         stmt = insert(self.model).values(**values).returning(self.model)
-        return (await self._session.execute(stmt)).scalars().first()
+        result = (await self._session.execute(stmt)).scalars().first()
+        if result is None:
+            raise EntityNotCreatedError(f"{self.model.__name__} was not created")
+        return result
 
     async def insert_many(
         self, data: Sequence[Mapping[str, Any]]

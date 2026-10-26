@@ -17,7 +17,7 @@ class AbstractCRUDRepository(abc.ABC, Generic[EntryType]):
         self.model = model
 
     @abc.abstractmethod
-    async def insert(self, **values: Mapping[str, Any]) -> EntryType | None:
+    async def insert(self, **values: Mapping[str, Any]) -> EntryType:
         raise NotImplementedError
 
     @abc.abstractmethod

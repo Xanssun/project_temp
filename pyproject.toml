@@ -31,6 +31,7 @@ taskiq-nats = "^0.6.0"
 msgpack = "^1.1.2"
 faststream = {extras = ["cli"], version = "0.5.48"}
 python-multipart = "^0.0.22"
+email-validator = "^2.3.0"
 
 
 [tool.poetry.group.lint]

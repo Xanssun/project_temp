@@ -32,11 +32,7 @@ from src.database import create_database_factory
 from src.database.core.connection import create_sa_engine, create_sa_session_factory
 from src.database.core.manager import TransactionManager
 from src.database.gateway import DBGateway
-from src.services import (
-    ExternalServiceGateway,
-    create_service_gateway_factory,
-)
-from src.services.internal.gateway import InternalServiceGateway
+from src.services import ExternalServiceGateway
 
 DependencyType = TypeVar("DependencyType")
 
@@ -66,7 +62,6 @@ def setup_dependencies(
     redis = get_redis(settings.redis)
     session_factory = create_sa_session_factory(engine)
     database_factory = create_database_factory(TransactionManager, session_factory)
-    service_factory = create_service_gateway_factory(database_factory)
 
     hasher = get_argon2_hasher()
     aescipher = get_aes_cipher(settings.aescipher)
@@ -101,7 +96,7 @@ def setup_dependencies(
     mediator = MediatorImpl()
     setup_mediator(
         mediator,
-        internal_gateway=service_factory,
+        db_gateway=database_factory,
         external_gateway=external_gateway,
         redis=redis,
         jwt=jwt,
@@ -123,11 +118,7 @@ def setup_dependencies(
     di_provider.provide(singleton(redis), provides=RedisCache)
     di_provider.provide(singleton(nats_broker), provides=NatsBroker)
     di_provider.provide(singleton(provider), provides=AsyncProvider)
-    di_provider.provide(
-        service_factory, provides=InternalServiceGateway, scope=Scope.REQUEST
-    )
     di_provider.provide(singleton(external_gateway), provides=ExternalServiceGateway)
-    di_provider.provide(service_factory, provides=InternalServiceGateway)
     di_provider.provide(singleton(jetstream_broker), provides=NatsJetStreamBroker)
     di_provider.provide(
         singleton(mediator),

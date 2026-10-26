@@ -9,6 +9,20 @@ class Token(DTO):
     token: str
 
 
+class TwoFaToken(DTO):
+    two_fa_token: str
+
+
+class ConfrimTwoFa(DTO):
+    two_fa_token: str
+    code: str
+
+
+class SetupTwoFa(DTO):
+    qr_url: str
+    two_fa_token: str
+
+
 class Tokens(DTO):
     access: str
     refresh: str

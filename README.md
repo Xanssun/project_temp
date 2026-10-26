@@ -12,6 +12,20 @@
 poetry run faststream run src.__main__:faststream --reload
 `
 
+Запуск сервиса
+
+`
+python -m venv .venv
+.venv\Scripts\Activate
+poetry install --with lint
+
+make docker_dev_up
+make upgrade
+python -m src
+`
+
+Проект доступен по http://localhost:8000/api/v1/docs
+
 ## Переменные
 
 ## Подключение к БД
@@ -50,7 +64,7 @@ poetry run faststream run src.__main__:faststream --reload
 | Название                              | Описание                                                    | Значение по-умолчанию             |
 |---------------------------------------|-------------------------------------------------------------|-----------------------------------|
 | `LOG_LEVEL`                           | Уровень логирования                                         | `INFO`                            |
-| `PROJECT_NAME`                        | Название проекта                                            | `risa_project`                        |
+| `PROJECT_NAME`                        | Название проекта                                            | `project-temp`                        |
 | `PROJECT_VERSION`                     | Версия проекта                                              | `0.1.0`                           |
 | `CIPHER_SECRET_KEY`                   | Ключ шифрования, для шифрования приватного ключа            |                                   |
 | `CIPHER_PUBLIC_KEY`                   | Ключ шифрования, для шифрования публичного ключа            |                                   |

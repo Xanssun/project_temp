@@ -1,6 +1,10 @@
 from enum import StrEnum
 from typing import Literal
 
+_UserLoadsType = Literal[
+    "roles",
+]
+_RoleLoadsType = Literal["users",]
 
 class RoleType(StrEnum):
     ADMIN = "Admin"

@@ -1,0 +1,57 @@
+services:
+  redis_:
+    container_name: redis-crypto-arbiter
+    image: redis:7-alpine
+    ports:
+      - '6370:6379'
+
+  postgres_:
+    container_name: postgres-crypto-arbiter
+    image: "postgres:15.6-alpine3.19"
+    restart: unless-stopped
+    ports:
+      - '5444:5432'
+    networks:
+      - interconnect
+      - postgres.network
+    env_file:
+      - "./.env"
+    environment:
+      POSTGRES_USER: ${DB_USER:-$USER}
+      POSTGRES_DB: ${DB_NAME:-$USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres.data:/var/lib/postgresql/users:rw
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 60s
+      retries: 5
+      start_period: 10s
+
+  nats:
+    container_name: 'nats-crypto-arbiter'
+    image: 'nats:latest'
+    restart: 'unless-stopped'
+    ports:
+      - '4229:4222'
+      - '6229:6222'
+      - '8229:8222'
+    command: 
+      - "--config"
+      - "/etc/nats/nats.conf"
+    volumes:
+      - ./nats/nats.conf:/etc/nats/nats.conf
+      - nats_data:/nats-assets/assets
+    networks:
+      - interconnect
+
+volumes:
+  postgres.data: {}
+  nats_data: {}
+
+networks:
+  interconnect:
+    driver: bridge
+  postgres.network: {}
+

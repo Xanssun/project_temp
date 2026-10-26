@@ -9,8 +9,12 @@ from typing import (
 
 import jwt
 
-from src.common.dtos.token import Token
-from src.common.exceptions import ConflictError, UnAuthorizedError
+from src.common.dtos.auth_token import Token
+from src.common.exceptions import (
+    ConflictError,
+    ServiceUnavailableError,
+    UnAuthorizedError,
+)
 from src.core.settings import CipherSettings
 
 TokenType = Literal["access", "refresh"]
@@ -62,7 +66,7 @@ class JWT:
                 self._settings.algorithm,
             )
         except jwt.PyJWTError as e:
-            raise UnAuthorizedError("Token is expired") from e
+            raise ServiceUnavailableError("Unable to create authentication token") from e
 
         return expire, Token(token=token)
 

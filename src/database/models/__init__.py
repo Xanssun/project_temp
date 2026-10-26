@@ -6,7 +6,11 @@ from sqlalchemy.orm import RelationshipProperty
 
 from src.database.models.base import Base
 
-__all__ = ("Base",)
+from .role import Role
+from .user import User
+from .user_role import UserRole
+
+__all__ = ("Base", "User", "Role", "UserRole")
 
 
 def _retrieve_relationships() -> (
