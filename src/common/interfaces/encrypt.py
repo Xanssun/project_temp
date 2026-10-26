@@ -1,0 +1,9 @@
+from typing import Protocol
+
+
+class AbstractAESCipher(Protocol):
+    def encrypt(self, plaintext: str) -> bytes: ...
+
+    def decrypt(self, ciphertext: bytes) -> str: ...
+
+    def _decode_key(self, encoded_key: str) -> bytes: ...
