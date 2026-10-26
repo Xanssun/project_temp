@@ -8,23 +8,20 @@
 
 Команда запуска fast stream
 
-`
-poetry run faststream run src.__main__:faststream --reload
-`
+`poetry run faststream run src.__main__:faststream --reload`
 
 Запуск сервиса
 
-`
-python -m venv .venv
-.venv\Scripts\Activate
-poetry install --with lint
+`python -m venv .venv`
+`.venv\Scripts\Activate`
+`poetry install --with lint`
 
-make docker_dev_up
-make upgrade
-python -m src
-`
+`make docker_dev_up`
+`make upgrade`
+`python -m src`
 
-Проект доступен по http://localhost:8000/api/v1/docs
+
+Проект доступен по `http://localhost:8000/api/v1/docs`
 
 ## Переменные
 
